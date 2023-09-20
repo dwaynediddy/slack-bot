@@ -9,8 +9,8 @@ slack_bot_token = os.environ['SLACK_BOT_TOKEN']
 client = WebClient(token=slack_bot_token)
 
 # Specify the user ID as the channel parameter
-# user_id = 'U05TJES4796'
-user_id='U05T6MR0CBW'
+user_id = 'U05TJES4796' #diddy
+# user_id='U05T6MR0CBW' #test acc
 
 response = client.conversations_open(users=[user_id])
 
