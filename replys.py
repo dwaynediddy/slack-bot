@@ -16,7 +16,7 @@ def get_DM():
         # Use the conversations.history method to retrieve messages
         response = client.conversations_history(
             channel=conversation_id,
-            limit=1  # get one message
+            limit=1 # get one message
         )
         
         if response['ok']:
