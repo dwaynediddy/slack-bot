@@ -18,17 +18,13 @@ def get_DM():
             channel=conversation_id,
             limit=1  # get one message
         )
-        print('try 24')
         
         if response['ok']:
             messages = response['messages']
-            print('message response line 27')
             if messages:
                 latest_dm = messages[0]['text']
-                print('the response is ok')
                 return latest_dm
             else:
-                print('No messages found.')
                 return None
         
     except SlackApiError as e:
@@ -54,9 +50,6 @@ def post_dm_test(message_text):
 latest_dm = get_DM()
 
 if latest_dm is not None:
-    # You can store the latest_dm in a variable or database until needed
-    print('DM is not None if this prints.')
-    # Example: Post the latest DM to a channel
     post_dm_test(latest_dm)
 else:
     print('No DM found from the user.')
