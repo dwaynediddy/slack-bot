@@ -11,25 +11,45 @@ client = WebClient(token=slack_bot_token)
 
 conversation_id = 'D05SVH4BXDK'  # conversation ID can be DM or channel
 
-try:
-    # Use the conversations.history method to retrieve messages
-    response = client.conversations_history(
-        channel=conversation_id,
-        limit=100,  # more than 200 is not recoomended
-    )
+def get_DM():
+    try:
+        # Use the conversations.history method to retrieve messages
+        response = client.conversations_history(
+            channel=conversation_id,
+            limit=1  # get one message
+        )
+        
+        if response['ok']:
+            messages = response['messages']
+            if messages:
+                latest_dm = messages[0]['text']
+                return latest_dm
+            else:
+                return None
+        
+    except SlackApiError as e:
+        print(f"Error: {e.response['error']}")
+        return None
 
-    if response['ok']:
-        messages = response['messages']
-        for message in reversed(messages):
-            user_id = message['user']
-            message_text = message['text']
+# Function to post a DM to another channel
+def post_dm_test(message_text):
+    try:
+        response = client.chat_postMessage(
+            channel='#test',
+            text=message_text
+        )
+        
+        if response['ok']:
+            print('Message posted successfully.')
+        else:
+            print('Failed to post message. Error:', response['error'])
+                
+    except SlackApiError as e:
+        print(f"Error: {e.response['error']}")
 
-            # Process and use the user's reply as needed
-            print(f"User ID: {user_id}")
-            print(f"Message Text: {message_text}")
-    else:
-        print('Failed to retrieve messages. Error:', response['error'])
+latest_dm = get_DM()
 
-except SlackApiError as e:
-    print(f"Error: {e.response['error']}")
-    
+if latest_dm is not None:
+    post_dm_test(latest_dm)
+else:
+    print('No DM found from the user.')
