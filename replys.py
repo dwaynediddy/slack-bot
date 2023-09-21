@@ -15,12 +15,12 @@ try:
     # Use the conversations.history method to retrieve messages
     response = client.conversations_history(
         channel=conversation_id,
-        limit=100  # more than 200 is not recoomended
+        limit=100,  # more than 200 is not recoomended
     )
 
     if response['ok']:
         messages = response['messages']
-        for message in messages:
+        for message in reversed(messages):
             user_id = message['user']
             message_text = message['text']
 
