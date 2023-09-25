@@ -3,7 +3,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from dotenv import load_dotenv
 import sqlite3
-import schedule
+import datetime
 import time
 
 load_dotenv()
@@ -75,13 +75,15 @@ def get_dm():
                 print(f"Error: (e.response['error])")
     
     # schedule for DM posts
-    schedule.every().hour.do(store_dm)
-    
-    schedule.every().day.at('9:00').do(post_stored_dms)
-
     while True:
-        schedule.run_pending()
-        time.sleep(1)
+        current_time = datetime.datetime.now()
+        
+        if current_time.minute == 0:
+            store_dm()
+        
+        if current_time.hour == 9 and current_time.minute == 0:
+            post_stored_dms
+            time.sleep(60)   
 
 cursor.close()
 conn.close()
