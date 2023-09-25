@@ -1,14 +1,12 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello():
-    return "Hello"
+@app.route('/', methods=['POST', 'GET'])
+def index():
+    response_message = "hello"
 
-@app.route('/slash')
-def slash_command():
-    return "Hello this is the slash route"
+    return response_message
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=5000)

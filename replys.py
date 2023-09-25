@@ -35,6 +35,7 @@ def get_DM():
 def post_dm_test(message_text):
     try:
         response = client.chat_postMessage(
+            # this sends a private message the user sent to the bot to the public channel (or channel of choice)
             channel='#test',
             text=message_text
         )
