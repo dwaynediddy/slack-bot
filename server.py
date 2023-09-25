@@ -17,6 +17,7 @@ conn = sqlite3.connect('my_database.db')
 
 cursor = conn.cursor()
 
+# Create the table if it doesn't exist
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS my_table (
         id INTEGER PRIMARY KEY,
@@ -46,44 +47,57 @@ def get_dm():
         print(f"Error: {e.response['error']}")
         return None
     
-    def store_dm(dm):
-        # Implement logic to store DMs in the database
-        latest_dm = get_dm(dm)
-        if latest_dm is not None:
-                cursor.execute("INSERT INTO my_table (name) VALUES (?)", (latest_dm,))
-                conn.commit()
-                
-    def post_stored_dms():
-        # Implement logic to post stored DMs
-        cursor.execute("SELECT name FROM my_table")
-        stored_dms = cursor.fetchall()
-        
-        if stored_dms:
-             message_to_post = "\n".join([f"DM: {dm[0]}" for dm in stored_dms])
-             
-             try:
-                 response = client.chat_post_message(
-                     channel='#test', # replace with channel of choice
-                     text=message_to_post
-                 )
-                 
-                 if response['ok']:
-                     print('Stored DMs posted successfully')
-                 else:
-                     print('Failed to post DMs')
-             except SlackApiError as e:
-                print(f"Error: (e.response['error])")
+def store_dm(dm):
+    # Implement logic to store DMs in the database
+    latest_dm = get_dm(dm)
+    if latest_dm is not None:
+        cursor.execute("INSERT INTO my_table (name) VALUES (?)", (latest_dm,))
+        conn.commit()
+
+def post_stored_dms():
+    # Implement logic to post stored DMs
+    cursor.execute("SELECT name FROM my_table")
+    stored_dms = cursor.fetchall()
     
-    # schedule for DM posts
-    while True:
-        current_time = datetime.datetime.now()
+    if stored_dms:
+        message_to_post = "\n".join([f"DM: {dm[0]}" for dm in stored_dms])
         
-        if current_time.minute == 0:
-            store_dm()
-        
-        if current_time.hour == 9 and current_time.minute == 0:
-            post_stored_dms
-            time.sleep(60)   
+        try:
+            response = client.chat_post_message(
+                channel='#test', # replace with channel of choice
+                text=message_to_post
+            )
+            
+            if response['ok']:
+                print('Stored DMs posted successfully')
+            else:
+                print('Failed to post DMs')
+        except SlackApiError as e:
+            print(f"Error: (e.response['error'])")
+    else:
+        print("No DMs in the database")
+
+# schedule for DM posts
+# while True:
+#     current_time = datetime.datetime.now()
+    
+#     if current_time.minute == 0:
+#         store_dm()
+    
+#     if current_time.hour == 9 and current_time.minute == 0:
+#         post_stored_dms()
+#         time.sleep(5)
+
+# Print stored DMs if any
+cursor.execute("SELECT name FROM my_table")
+stored_dms = cursor.fetchall()
+
+if stored_dms:
+    print("Stored DMs:")
+    for dm in stored_dms:
+        print(f"DM: {dm[0]}")
+else:
+    print("No DMs retrieved from the database")
 
 cursor.close()
 conn.close()
