@@ -16,7 +16,8 @@ response = client.conversations_open(users=[user_id])
 
 if response['ok']:
     conversation_id = response['channel']['id']
-    message = 'This is a DM from a Bot'
+    # this sends a private message from the bot
+    message = 'hello how are you'
     
     client.chat_postMessage(
         channel=conversation_id,
