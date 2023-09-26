@@ -5,14 +5,11 @@ from dotenv import load_dotenv
 import sqlite3
 import datetime
 import time
-import logging
 
 load_dotenv()
 
 slack_bot_token = os.environ['SLACK_BOT_TOKEN']
 client = WebClient(token=slack_bot_token)
-
-logger = logging.getLogger(__name__)
 
 # connect to sqlite
 conn = sqlite3.connect('my_slack_bot.db')
