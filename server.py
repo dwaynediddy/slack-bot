@@ -19,7 +19,7 @@ conversation_id = 'D05SVH4BXDK'
 user_id = 'U05TJES4796'
 
 # create table if it doesn't exist
-cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT)")
+cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, unique_key TEXT)")
 
 rows = cursor.execute("SELECT message, sender FROM my_slack_bot").fetchall()
 rows.reverse()
@@ -67,29 +67,26 @@ def store_dm(message, sender):
     print(f"Stored DM: {message} from {sender}")
 
 # Function to retrieve the latest DM from each user in the database
-def get_latest_dms():
-    latest_dms = []
-    
+def send_latest_unsent_dms():
     cursor.execute("SELECT DISTINCT sender FROM my_slack_bot")
     unique_senders = cursor.fetchall()
     
     for sender in unique_senders:
-        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? ORDER BY ROWID DESC LIMIT 1", sender)
+        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? AND unique_key IS NULL ORDER BY ROWID ASC LIMIT 1", (sender[0],))  # Note the change here
         result = cursor.fetchone()
         if result:
             message_text = result[0]
-            latest_dms.append(f"Latest DM from {sender[0]}: {message_text}")
-    
-    return latest_dms
+            send_scheduled_message(message_text)
+            # Mark the message as "sent" in the database (optional)
+            cursor.execute("UPDATE my_slack_bot SET unique_key = 'sent' WHERE sender = ? AND unique_key IS NULL", (sender[0],))
+            conn.commit()
 
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 31:
-        latest_dms = get_latest_dms()
-        for dm in latest_dms:
-            send_scheduled_message(dm)
+    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 53:
+            send_latest_unsent_dms()
 
 # Function to send a message to the test channel
 def send_scheduled_message(message_text):
