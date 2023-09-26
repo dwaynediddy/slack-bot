@@ -86,7 +86,7 @@ def send_latest_unsent_dms():
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 0 and current_time.hour == 9 and current_time.minute == 0:
+    if current_time.weekday() == 1 and current_time.hour == 14 and current_time.minute == 23:
             send_latest_unsent_dms()
 
 # Function to send a message to the test channel
@@ -104,4 +104,4 @@ def send_scheduled_message(message_text):
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(55)  # interval in seconds (adjust as needed)
+    time.sleep(60)  # interval in seconds (adjust as needed)
