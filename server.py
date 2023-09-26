@@ -70,20 +70,23 @@ def send_latest_unsent_dms():
     unique_senders = cursor.fetchall()
     
     for sender in unique_senders:
-        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? AND unique_key IS NULL ORDER BY ROWID ASC LIMIT 1", (sender[0],))  # Note the change here
+        # Retrieve the LATEST message from users
+        cursor.execute("SELECT message, unique_key FROM my_slack_bot WHERE sender = ? ORDER BY ROWID DESC LIMIT 1", (sender[0],))
         result = cursor.fetchone()
         if result:
-            message_text = result[0]
-            send_scheduled_message(message_text)
-            # Mark the message as "sent" in the database (optional)
-            cursor.execute("UPDATE my_slack_bot SET unique_key = 'sent' WHERE sender = ? AND unique_key IS NULL", (sender[0],))
-            conn.commit()
+            message_text, timestamp = result
+            if not timestamp or not timestamp.startswith('sent:'):
+                send_scheduled_message(message_text)
+                # Mark the message as "sent" in the database
+                new_timestamp = f'sent:{int(time.time())}'
+                cursor.execute("UPDATE my_slack_bot SET unique_key = ? WHERE sender = ? AND unique_key = ?", (new_timestamp, sender[0], timestamp))
+                conn.commit()
 
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 57:
+    if current_time.weekday() == 1 and current_time.hour == 14 and current_time.minute == 7:
             send_latest_unsent_dms()
 
 # Function to send a message to the test channel
@@ -101,4 +104,4 @@ def send_scheduled_message(message_text):
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(600)  # interval in seconds (adjust as needed)
+    time.sleep(55)  # interval in seconds (adjust as needed)
