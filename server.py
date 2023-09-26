@@ -71,12 +71,12 @@ def send_latest_unsent_dms():
     
     for sender in unique_senders:
         # Retrieve the LATEST message from users
-        cursor.execute("SELECT message, unique_key FROM my_slack_bot WHERE sender = ? ORDER BY ROWID DESC LIMIT 1", (sender[0],))
+        cursor.execute("SELECT message, sender, unique_key FROM my_slack_bot WHERE sender = ? ORDER BY ROWID DESC LIMIT 1", (sender[0],))
         result = cursor.fetchone()
         if result:
-            message_text, timestamp = result
+            message_text, sender_name, timestamp = result
             if not timestamp or not timestamp.startswith('sent:'):
-                send_scheduled_message(message_text)
+                send_scheduled_message(message_text, sender_name)  # Include sender's name
                 # Mark the message as "sent" in the database
                 new_timestamp = f'sent:{int(time.time())}'
                 cursor.execute("UPDATE my_slack_bot SET unique_key = ? WHERE sender = ? AND unique_key = ?", (new_timestamp, sender[0], timestamp))
@@ -86,17 +86,17 @@ def send_latest_unsent_dms():
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 0 and current_time.hour == 9 and current_time.minute == 0:
+    if current_time.weekday() == 1 and current_time.hour == 14 and current_time.minute == 33:
             send_latest_unsent_dms()
 
 # Function to send a message to the test channel
-def send_scheduled_message(message_text):
+def send_scheduled_message(message_text, sender_name):
     try:
         client.chat_postMessage(
             channel='#test', 
-            text=message_text
+            text=f'{sender_name} says: {message_text}'
         )
-        print(f'Sent scheduled message to #test channel: {message_text}')
+        print(f'Sent scheduled message to #test channel: {message_text} from {sender_name}')
     except SlackApiError as e:
         print(f"Error sending scheduled message to #test channel: {e.response['error']}")
 
@@ -104,4 +104,4 @@ def send_scheduled_message(message_text):
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(55)  # interval in seconds (adjust as needed)
+    time.sleep(10)  # interval in seconds (adjust as needed)
