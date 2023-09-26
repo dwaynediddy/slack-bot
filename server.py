@@ -17,16 +17,9 @@ cursor = conn.cursor()
 
 conversation_id = 'D05SVH4BXDK'
 user_id = 'U05TJES4796'
-# user_id = 'U05T6MR0CBW'  # test acc
-
-test_channel_id = 'C05SVHU936Z' #test channel id
-
 
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT)")
-
-cursor.execute("INSERT INTO my_slack_bot VALUES ('hello world', 'diddy')")
-cursor.execute("INSERT INTO my_slack_bot VALUES ('just to wet the whistle?', 'Super Hans')")
 
 rows = cursor.execute("SELECT message, sender FROM my_slack_bot").fetchall()
 rows.reverse()
@@ -74,27 +67,40 @@ def store_dm(message, sender):
     print(f"Stored DM: {message} from {sender}")
     
 # Function to send a message to the test channel
-def send_scheduled_messaage(message_text):
-    try:
-        client.chat_postMessage(
-            channel='#test',  # Replace with your test channel name or ID
-            text=message_text
-        )
-        print(f'Sent message: {message_text} to #test channel')
-    except SlackApiError as e:
-        print(f"Error sending message to #test channel: {e.response['error']}")
-
-# Schedule a message to be sent to the test channel at a specific datetime
 def schedule_message():
-    scheduled_time = datetime.datetime(2023, 9, 26, 12, 8)  # Adjust the datetime as needed
     current_time = datetime.datetime.now()
     
-    if current_time >= scheduled_time:
-        message_text = "This is a scheduled message to #test channel"
-        send_scheduled_messaage(message_text)
+    if current_time.weekday() == 1 and current_time.hour == 12 and current_time.minute == 35:
+        # Retrieve a stored DM from your SQLite database
+        stored_dm = get_stored_dm()  # Implement this function to fetch a stored DM
+        
+        if stored_dm:
+            send_scheduled_message(stored_dm)
+
+# Function to retrieve a stored DM from the database
+def get_stored_dm():
+    cursor.execute("SELECT message, sender FROM my_slack_bot ORDER BY RANDOM() LIMIT 1")  # Select a random stored DM
+    result = cursor.fetchone()
+    if result:
+        message_text, sender_name = result
+        return f"Stored DM from {sender_name}: {message_text}"
+    else:
+        return None
+
+# Function to send a message to the test channel
+def send_scheduled_message(message_text):
+    try:
+        client.chat_postMessage(
+            channel='#test',
+            text=message_text
+        )
+        print(f'Sent scheduled message to #test channel: {message_text}')
+    except SlackApiError as e:
+        print(f"Error sending scheduled message to #test channel: {e.response['error']}")
+
 
 # Periodically check for new messages and store them
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(6000)  # interval in seconds
+    time.sleep(10)  # interval in seconds
