@@ -16,13 +16,11 @@ conn = sqlite3.connect('my_slack_bot.db')
 cursor = conn.cursor()
 
 conversation_id = 'D05SVH4BXDK'
-user_id = 'U05TJES4796'
 
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, unique_key TEXT)")
 
 rows = cursor.execute("SELECT message, sender FROM my_slack_bot").fetchall()
-rows.reverse()
 
 # Function to get and store new messages
 def get_and_store_new_messages():
@@ -39,7 +37,7 @@ def get_and_store_new_messages():
                     sender_id = message['user']
                     message_text = message['text']
 
-                    # Fetch user information to get the user's display name
+                    # Fetch user information to get the user's display name (needs a display name set or will be blank)
                     try:
                         user_info_response = client.users_info(user=sender_id)
                         if user_info_response['ok']:
@@ -85,7 +83,7 @@ def send_latest_unsent_dms():
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 53:
+    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 57:
             send_latest_unsent_dms()
 
 # Function to send a message to the test channel
@@ -103,4 +101,4 @@ def send_scheduled_message(message_text):
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(10)  # interval in seconds (adjust as needed)
+    time.sleep(600)  # interval in seconds (adjust as needed)
