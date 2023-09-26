@@ -65,42 +65,45 @@ def store_dm(message, sender):
     cursor.execute("INSERT INTO my_slack_bot (message, sender) VALUES (?, ?)", (message, sender))
     conn.commit()
     print(f"Stored DM: {message} from {sender}")
+
+# Function to retrieve the latest DM from each user in the database
+def get_latest_dms():
+    latest_dms = []
     
+    cursor.execute("SELECT DISTINCT sender FROM my_slack_bot")
+    unique_senders = cursor.fetchall()
+    
+    for sender in unique_senders:
+        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? ORDER BY ROWID DESC LIMIT 1", sender)
+        result = cursor.fetchone()
+        if result:
+            message_text = result[0]
+            latest_dms.append(f"Latest DM from {sender[0]}: {message_text}")
+    
+    return latest_dms
+
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now()
     
-    if current_time.weekday() == 1 and current_time.hour == 12 and current_time.minute == 35:
-        # Retrieve a stored DM from your SQLite database
-        stored_dm = get_stored_dm()  # Implement this function to fetch a stored DM
-        
-        if stored_dm:
-            send_scheduled_message(stored_dm)
-
-# Function to retrieve a stored DM from the database
-def get_stored_dm():
-    cursor.execute("SELECT message, sender FROM my_slack_bot ORDER BY RANDOM() LIMIT 1")  # Select a random stored DM
-    result = cursor.fetchone()
-    if result:
-        message_text, sender_name = result
-        return f"Stored DM from {sender_name}: {message_text}"
-    else:
-        return None
+    if current_time.weekday() == 1 and current_time.hour == 13 and current_time.minute == 31:
+        latest_dms = get_latest_dms()
+        for dm in latest_dms:
+            send_scheduled_message(dm)
 
 # Function to send a message to the test channel
 def send_scheduled_message(message_text):
     try:
         client.chat_postMessage(
-            channel='#test',
+            channel='#test', 
             text=message_text
         )
         print(f'Sent scheduled message to #test channel: {message_text}')
     except SlackApiError as e:
         print(f"Error sending scheduled message to #test channel: {e.response['error']}")
 
-
 # Periodically check for new messages and store them
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(10)  # interval in seconds
+    time.sleep(10)  # interval in seconds (adjust as needed)
