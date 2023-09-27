@@ -85,9 +85,13 @@ def send_latest_unsent_dms():
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now()
-    
-    if current_time.weekday() == 0 and current_time.hour == 9 and current_time.minute == 30:
-            send_latest_unsent_dms()
+    # set this line to the when you want the bot to post
+    if (
+        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 14) or
+        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 19) or
+        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 22)
+    ):
+        send_latest_unsent_dms()
 
 # Function to send a message to the test channel
 def send_scheduled_message(message_text, sender_name):
@@ -105,4 +109,5 @@ while True:
     get_and_store_new_messages()
     schedule_message()
     # 21600 every 6 hours
-    time.sleep(21600)  # interval in seconds (adjust as needed)
+    time.sleep(60)  # interval in seconds (adjust as needed)
+    
