@@ -1,22 +1,10 @@
-from flask import Flask, request, jsonify
-# import os
-# from slack_sdk import WebClient
-# from slack_sdk.errors import SlackApiError
-# from dotenv import load_dotenv
+from flask import Flask
 
-# load_dotenv()
+app = Flask(__name__)
 
-# app = Flask(__name__)
+@app.route('/')
+def hello_world():
+    return 'Hello world'
 
-# @app.route('/slash', methods=['POST'])
-# def slash_command():
-#     data = request.form
-#     command = data.get('command')
-#     text = data.get('text')
-    
-#     response_text = f'You entered: {text}'
-    
-#     return jsonify({'text': response_text})
-
-# if __name__ == '__main__':
-#     app.run()
+if __name__ == '__main__':
+    app.run()
