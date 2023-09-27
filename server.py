@@ -104,4 +104,5 @@ def send_scheduled_message(message_text, sender_name):
 while True:
     get_and_store_new_messages()
     schedule_message()
-    time.sleep(600)  # interval in seconds (adjust as needed)
+    # 21600 every 6 hours
+    time.sleep(21,600)  # interval in seconds (adjust as needed)
