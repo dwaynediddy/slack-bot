@@ -8,7 +8,7 @@ import time
 
 load_dotenv()
 
-slack_bot_token = os.environ['SLACK_BOT_TOKEN']
+slack_bot_token = os.getenv['SLACK_BOT_TOKEN']
 client = WebClient(token=slack_bot_token)
 
 # connect to sqlite
