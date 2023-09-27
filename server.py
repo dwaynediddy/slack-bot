@@ -105,4 +105,4 @@ while True:
     get_and_store_new_messages()
     schedule_message()
     # 21600 every 6 hours
-    time.sleep(21,600)  # interval in seconds (adjust as needed)
+    time.sleep(21600)  # interval in seconds (adjust as needed)
