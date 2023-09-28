@@ -87,9 +87,10 @@ def schedule_message():
     current_time = datetime.datetime.now()
     # set this line to the when you want the bot to post using for testing over a period of time
     if (
-        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 14) or
-        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 19) or
-        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 22)
+        (current_time.weekday() == 2 and current_time.hour == 21 and current_time.minute == 30) or
+        (current_time.weekday() == 2 and current_time.hour == 23 and current_time.minute == 45) or
+        (current_time.weekday() == 3 and current_time.hour == 1 and current_time.minute == 22) or
+        (current_time.weekday() == 3 and current_time.hour == 3 and current_time.minute == 22) 
     ):
         send_latest_unsent_dms()
         
