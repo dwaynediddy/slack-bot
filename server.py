@@ -84,20 +84,17 @@ def send_latest_unsent_dms():
 
 # Function to send a message to the test channel
 def schedule_message():
-    current_time = datetime.datetime.now()
-    # set this line to the when you want the bot to post using for testing over a period of time
-    if (
-        (current_time.weekday() == 3 and current_time.hour == 11 and current_time.minute == 59) or
-        (current_time.weekday() == 3 and current_time.hour == 12 and current_time.minute == 45) or
-        (current_time.weekday() == 3 and current_time.hour == 13 and current_time.minute == 22) or
-        (current_time.weekday() == 3 and current_time.hour == 14 and current_time.minute == 22) 
-    ):
+    current_time = datetime.datetime.now() 
+    if current_time.weekday() == 3 and current_time.hour == 22 and current_time.minute == 00:
         send_latest_unsent_dms()
         
-    # def schedule_message():
-    # current_time = datetime.datetime.now()
-    
-    # if current_time.weekday() == 0 and current_time.hour == 9 and current_time.minute == 30:
+    # set this line to the when you want the bot to post using for testing over a period of time
+    # if (
+    #     (current_time.weekday() == 3 and current_time.hour == 22 and current_time.minute == 00) or
+    #     (current_time.weekday() == 4 and current_time.hour == 12 and current_time.minute == 45) or
+    #     (current_time.weekday() == 3 and current_time.hour == 13 and current_time.minute == 22) or
+    #     (current_time.weekday() == 3 and current_time.hour == 14 and current_time.minute == 22) 
+    # ):
     #     send_latest_unsent_dms()
 
 # Function to send a message to the test channel
