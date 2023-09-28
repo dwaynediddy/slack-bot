@@ -17,7 +17,7 @@ def insert_fake_dm(message, sender):
 fake_users = ['randy', 'super hans', 'james', 'bob', 'ted']
 for _ in range(10): # number of fake dms
     sender = random.choice(fake_users)
-    message = f"Fake message from {sender}: {random.choice(['Hello', 'Hi', 'How are you?', 'Testing'])}"
+    message = f"Fake message from {sender}: {random.choice(['Hello World', 'I am Happy today', 'Are you well??', 'Testing'])}"
     insert_fake_dm(message, sender)
 
 # Retrieve and print the fake DMs
