@@ -119,10 +119,10 @@ def schedule_message():
 
     # Set this line to when you want the bot to post using for testing over a period of time
     if (
-        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 4) or
-        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 6) or
-        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 8) or
-        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 10)     
+        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 24) or
+        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 25) or
+        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 26) or
+        (current_time.weekday() == 2 and current_time.hour == 22 and current_time.minute == 27)     
     ):
         send_latest_unsent_dms()
 
@@ -138,7 +138,7 @@ def send_scheduled_message(message_text, sender_name, sender_id):
         current_message_unique_key = cursor.fetchone()
 
         if last_bot_unique_key and current_message_unique_key and last_bot_unique_key[0] == current_message_unique_key[0]:
-            print(f"Message from {sender_name} has the same unique key as the last bot message, not sending.")
+            print(f"Message from {sender_name} has the same unique key as the last message, not sending.")
         else:
             client.chat_postMessage(
                 channel='#test', 
@@ -160,14 +160,13 @@ def mark_message_as_sent(sender_id, message_text):
 
 # Function to send unsent messages
 def send_unsent_messages():
-    cursor.execute("SELECT sender, message FROM my_slack_bot WHERE status = 'unsent'")
+    cursor.execute("SELECT sender, message FROM my_slack_bot WHERE status = 'unsent' LIMIT 5")
     unsent_messages = cursor.fetchall()
 
     for sender, message_text in unsent_messages:
         sender_name = get_sender_name(sender)
         send_scheduled_message(message_text, sender_name, sender)
         mark_message_as_sent(sender, message_text)
-
 
 # Periodically check for new messages and store them
 while True:
