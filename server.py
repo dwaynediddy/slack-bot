@@ -60,7 +60,7 @@ def get_and_store_new_messages():
         print(f"Error: {e.response['error']}")
 
 def store_dm(message, sender):
-    cursor.execute("INSERT INTO my_slack_bot (message, sender) VALUES (?, ?)", (message, sender))
+    cursor.execute("INSERT INTO my_slack_bot (message, sender, unique_key) VALUES (?, ?, ?)", (message, sender, ""))
     conn.commit()
     print(f"Stored DM: {message} from {sender}")
 
@@ -93,7 +93,7 @@ def schedule_message():
     #     (current_time.weekday() == 3 and current_time.hour == 22 and current_time.minute == 00) or
     #     (current_time.weekday() == 4 and current_time.hour == 12 and current_time.minute == 45) or
     #     (current_time.weekday() == 3 and current_time.hour == 13 and current_time.minute == 22) or
-    #     (current_time.weekday() == 3 and current_time.hour == 14 and current_time.minute == 22) 
+    #     (current_time.weekday() == 3 and current_time.hour == 14 and current_time.minute == 22)   
     # ):
     #     send_latest_unsent_dms()
 
