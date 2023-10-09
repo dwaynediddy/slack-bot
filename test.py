@@ -20,6 +20,7 @@ conversation_id = 'D05SVH4BXDK'
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, is_sent BOOLEAN)")
 
+#only sending if is_sent is false
 rows = cursor.execute("SELECT message, sender FROM my_slack_bot WHERE is_sent = 0").fetchall()
 
 
@@ -28,7 +29,8 @@ def get_and_store_new_messages():
     try:
         response = client.conversations_history(
             channel=conversation_id,
-            limit=1
+            # checking last 10 messages (can be more)
+            limit=10
         )
 
         if response['ok']:
@@ -99,13 +101,13 @@ def schedule_message():
         
     # set this line to the when you want the bot to post using for testing over a period of time
     if (
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 10) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 11) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 12) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 14) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 15) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 16) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 17)   
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 18) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 19) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 20) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 21) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 22) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 24) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 26)   
     ):
         send_latest_unsent_dms()
 
