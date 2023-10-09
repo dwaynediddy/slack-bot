@@ -89,7 +89,7 @@ def send_latest_unsent_dms():
     unsent_messages = cursor.fetchall()
 
     for sender, message_text in unsent_messages:
-        sender_name = sender  # Replace with your logic to get the sender's name
+        sender_name = sender  
         send_scheduled_message(message_text, sender_name)
 
 
@@ -101,13 +101,11 @@ def schedule_message():
         
     # set this line to the when you want the bot to post using for testing over a period of time
     if (
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 18) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 19) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 20) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 21) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 22) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 24) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 26)   
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 30) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 31) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 32) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 33) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 35)   
     ):
         send_latest_unsent_dms()
 
