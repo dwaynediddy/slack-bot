@@ -20,7 +20,8 @@ conversation_id = 'D05SVH4BXDK'
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, is_sent BOOLEAN)")
 
-rows = cursor.execute("SELECT message, sender FROM my_slack_bot").fetchall()
+rows = cursor.execute("SELECT message, sender FROM my_slack_bot WHERE is_sent = 0").fetchall()
+
 
 # Function to get and store new messages
 def get_and_store_new_messages():
@@ -98,10 +99,13 @@ def schedule_message():
         
     # set this line to the when you want the bot to post using for testing over a period of time
     if (
-        (current_time.weekday() == 0 and current_time.hour == 13 and current_time.minute == 26) or
-        (current_time.weekday() == 0 and current_time.hour == 13 and current_time.minute == 27) or
-        (current_time.weekday() == 0 and current_time.hour == 13 and current_time.minute == 28) or
-        (current_time.weekday() == 0 and current_time.hour == 13 and current_time.minute == 29)   
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 10) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 11) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 12) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 14) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 15) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 16) or
+        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 17)   
     ):
         send_latest_unsent_dms()
 
