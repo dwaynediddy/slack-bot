@@ -20,10 +20,6 @@ conversation_id = 'D05SVH4BXDK'
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, is_sent BOOLEAN)")
 
-#only sending if is_sent is false
-rows = cursor.execute("SELECT message, sender FROM my_slack_bot WHERE is_sent = 0").fetchall()
-
-
 # Function to get and store new messages
 def get_and_store_new_messages():
     try:
@@ -81,31 +77,28 @@ def store_dm(message, sender):
     else:
         print(f"Message from {sender} has already been stored, not storing again.")
 
-
-
-
+# Function to send all unsent messages in order of storage
 def send_latest_unsent_dms():
-    cursor.execute("SELECT DISTINCT sender, message FROM my_slack_bot WHERE is_sent = 0")
-    unsent_messages = cursor.fetchall()
+    cursor.execute("SELECT DISTINCT sender FROM my_slack_bot WHERE is_sent = 0")
+    senders = cursor.fetchall()
 
-    for sender, message_text in unsent_messages:
-        sender_name = sender  
-        send_scheduled_message(message_text, sender_name)
+    for sender_row in senders:
+        sender = sender_row[0]
+        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? AND is_sent = 0 ORDER BY rowid ASC", (sender,))
+        unsent_messages = cursor.fetchall()
 
+        for message_row in unsent_messages:
+            message_text = message_row[0]
+            send_scheduled_message(message_text, sender)
 
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now() 
-    # if current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 31:
-    #     send_latest_unsent_dms()
-        
-    # set this line to the when you want the bot to post using for testing over a period of time
+
     if (
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 30) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 31) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 32) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 33) or
-        (current_time.weekday() == 0 and current_time.hour == 19 and current_time.minute == 35)   
+        (current_time.weekday() == 0 and current_time.hour == 20 and current_time.minute == 41) or
+        (current_time.weekday() == 0 and current_time.hour == 20 and current_time.minute == 44) or
+        (current_time.weekday() == 0 and current_time.hour == 20 and current_time.minute == 47)   
     ):
         send_latest_unsent_dms()
 
@@ -125,11 +118,9 @@ def send_scheduled_message(message_text, sender_name):
     except SlackApiError as e:
         print(f"Error sending scheduled message to #test channel: {e.response['error']}")
 
-
 # Periodically check for new messages and store them
 while True:
     get_and_store_new_messages()
     schedule_message()
     # 21600 every 6 hours
     time.sleep(45)  # interval in seconds (adjust as needed)
-    
