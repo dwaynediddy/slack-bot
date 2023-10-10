@@ -99,9 +99,9 @@ def schedule_message():
     
     # can replace the line above if you want multiple scheduled times
     if (
-        (current_time.weekday() == 0 and current_time.hour == 10 and current_time.minute == 38) or
-        (current_time.weekday() == 0 and current_time.hour == 10 and current_time.minute == 40) or
-        (current_time.weekday() == 0 and current_time.hour == 10 and current_time.minute == 42)   
+        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 28) or
+        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 40) or
+        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 42)   
     ):
         send_latest_unsent_dms()
 
