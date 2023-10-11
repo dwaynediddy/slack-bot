@@ -1,6 +1,7 @@
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+import time
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,21 +31,28 @@ def handle_team_join(event_data):
         print(f"Error fetching user info: {e.response['error']}")
         sender_name = new_member_id
 
-    welcome_message = f"Welcome {sender_name} to the team! We're glad to have you here."
+    welcome_message = f"Welcome {sender_name} to the team! IIve sent you a DM ;)"
 
     try:
         # Send a DM to the new member
-        dm_response = client.chat_postMessage(channel=new_member_id, text=f"Hello {sender_name}, welcome to the team!")
-        print(f"Sent DM to {sender_name}: {dm_response['ts']}") 
+        dm_response = client.conversations_open(users=[new_member_id])
+        conversation_id = dm_response['channel']['id']
+        
+        # thiis will also get me the conversation id which i will need
+        # to store and post recieved messages
+        dm_message_response = client.chat_postMessage(channel=conversation_id, text=f"Hello {sender_name}, THIS IS HOW I AM USED!")
+        print(f"Sent DM to {sender_name} in conversation {conversation_id}: {dm_message_response['ts']}")
+
 
         # Send a welcome message to the #test channel
-        client.chat_postMessage(channel='#test', text=welcome_message)
+        # client.chat_postMessage(channel='#test', text=welcome_message)
         print(welcome_message)
     except SlackApiError as e:
         print(f"Error sending welcome message or DM: {e.response['error']}")
 
 # send to new user
 # using my own id for now
+
 event_data = {
     "event": {
         "user": {
@@ -53,3 +61,6 @@ event_data = {
     }
 }
 handle_team_join(event_data)
+
+while True:
+    time.sleep(10)
