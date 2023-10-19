@@ -20,6 +20,7 @@ conversation_id = 'D05SVH4BXDK'
 # create table if it doesn't exist
 cursor.execute("CREATE TABLE IF NOT EXISTS my_slack_bot (message TEXT, sender TEXT, is_sent BOOLEAN)")
 
+
 # Function to get and store new messages
 def get_and_store_new_messages():
     try:
@@ -31,7 +32,7 @@ def get_and_store_new_messages():
 
         if response['ok']:
             messages = response['messages']
-            for message in messages:
+            for message in reversed(messages):  # Reverse the order when storing
                 if 'user' in message and 'text' in message:
                     sender_id = message['user']
                     message_text = message['text']
@@ -44,7 +45,8 @@ def get_and_store_new_messages():
                             if 'profile' in user_info and 'display_name' in user_info['profile']:
                                 sender_name = user_info['profile']['display_name']
                             else:
-                                sender_name = user_info['real_name_normalized'] if 'real_name_normalized' in user_info else sender_id
+                                sender_name = user_info[
+                                    'real_name_normalized'] if 'real_name_normalized' in user_info else sender_id
                                 print('User display name not found, using real name')
                         else:
                             sender_name = sender_id
@@ -57,6 +59,7 @@ def get_and_store_new_messages():
 
     except SlackApiError as e:
         print(f"Error: {e.response['error']}")
+
 
 def store_dm(message, sender):
     # Check if the message already exists
@@ -77,6 +80,7 @@ def store_dm(message, sender):
     else:
         print(f"Message from {sender} has already been stored, not storing again.")
 
+
 # Function to send all unsent messages in order of storage
 def send_latest_unsent_dms():
     cursor.execute("SELECT DISTINCT sender FROM my_slack_bot WHERE is_sent = 0")
@@ -84,42 +88,47 @@ def send_latest_unsent_dms():
 
     for sender_row in senders:
         sender = sender_row[0]
-        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? AND is_sent = 0 ORDER BY rowid ASC", (sender,))
+        cursor.execute("SELECT message FROM my_slack_bot WHERE sender = ? AND is_sent = 0 ORDER BY rowid ASC",
+                       (sender,))
         unsent_messages = cursor.fetchall()
 
         for message_row in unsent_messages:
             message_text = message_row[0]
             send_scheduled_message(message_text, sender)
 
+
 # Function to send a message to the test channel
 def schedule_message():
     current_time = datetime.datetime.now()
-    # current_time.weekday() == 1 and current_time.hour == 9 and current_time.minute == 44
-    send_latest_unsent_dms()
-    
+    # current_time.weekday() == 1 and current_time.hour == 12 and current_time.minute == 38
+    # send_latest_unsent_dms()
+
     # can replace the line above if you want multiple scheduled times
     if (
-        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 28) or
-        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 40) or
-        (current_time.weekday() == 0 and current_time.hour == 12 and current_time.minute == 42)   
+            (current_time.weekday() == 3 and current_time.hour == 11 and current_time.minute == 23) or
+            (current_time.weekday() == 3 and current_time.hour == 11 and current_time.minute == 24) or
+            (current_time.weekday() == 3 and current_time.hour == 11 and current_time.minute == 25)
     ):
         send_latest_unsent_dms()
+
 
 # Function to send a message to the test channel
 def send_scheduled_message(message_text, sender_name):
     try:
         client.chat_postMessage(
-            channel='#test', 
+            channel='#test',
             text=f'{sender_name} says: {message_text}'
         )
         print(f'Sent scheduled message to #test channel: {message_text} from {sender_name}')
-        
+
         # Mark the message as sent in the database
-        cursor.execute("UPDATE my_slack_bot SET is_sent = 1 WHERE sender = ? AND message = ?", (sender_name, message_text))
+        cursor.execute("UPDATE my_slack_bot SET is_sent = 1 WHERE sender = ? AND message = ?",
+                       (sender_name, message_text))
         conn.commit()
-        
+
     except SlackApiError as e:
         print(f"Error sending scheduled message to #test channel: {e.response['error']}")
+
 
 # Periodically check for new messages and store them
 while True:
