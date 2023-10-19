@@ -9,10 +9,11 @@ cursor = conn.cursor()
 def insert_fake_dm(message, sender):
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     cursor.execute(
-        "INSERT INTO my_slack_bot (message, sender) VALUES (?, ?)",
-        (message, sender)
-        )
+        "INSERT INTO my_slack_bot (message, sender, is_sent) VALUES (?, ?, ?)",
+        (message, sender, 0)  # Set is_sent to 1 to indicate the message is sent
+    )
     conn.commit()
+
     
 fake_users = ['randy', 'super hans', 'james', 'bob', 'ted']
 for _ in range(10): # number of fake dms
@@ -29,5 +30,3 @@ for dm in fake_dms:
     print(f"Sender: {sender}\nMessage: {message}\n")
     
 conn.close()
-
-    
